@@ -485,13 +485,17 @@ ${formatBytes(link.meta.bytes || 0)}`,
     }));
     const results = yield Promise.all(streamPromises);
     const flat = results.reduce((acc, val) => acc.concat(val), []);
-    return flat
+    const fsl1080 = flat
       .filter((stream) => stream.quality === "1080p" && stream.name.includes("FSL"))
       .map((stream) => {
         const lines = stream.title.split("\n");
         const fileTitle = lines[0] ? lines[0].trim() : "";
         const sizeText = lines[1] ? lines[1].trim() : "Unknown size";
         const upper = fileTitle.toUpperCase();
+        let codec = "";
+        if (/X265|HEVC|H\.?265/.test(upper)) codec = "x265";
+        else if (/X264|H\.?264|AVC/.test(upper)) codec = "x264";
+        else if (/AV1/.test(upper)) codec = "AV1";
         let source = "";
         if (/WEB[\s.-]?DL/.test(upper)) source = "WEB-DL";
         else if (/WEB[\s.-]?RIP/.test(upper)) source = "WEBRip";
@@ -500,14 +504,28 @@ ${formatBytes(link.meta.bytes || 0)}`,
         else if (/HDRIP/.test(upper)) source = "HDRip";
         else if (/DVDRIP/.test(upper)) source = "DVDRip";
         else if (/REMUX/.test(upper)) source = "REMUX";
-        const label = source
-          ? `4KHDHub - FSL 1080p ${source} [${sizeText}]`
+        const tags = [source, codec].filter(Boolean).join(" ");
+        const label = tags
+          ? `4KHDHub - FSL 1080p ${tags} [${sizeText}]`
           : `4KHDHub - FSL 1080p [${sizeText}]`;
         return __spreadProps(__spreadValues({}, stream), {
           name: label,
-          title: stream.title
+          title: stream.title,
+          _codec: codec,
+          _sizeBytes: parseBytes(sizeText)
         });
       });
+    const x265Only = fsl1080.filter((s) => s._codec === "x265");
+    if (x265Only.length > 0) {
+      const biggest = x265Only.reduce((best, curr) =>
+        curr._sizeBytes > best._sizeBytes ? curr : best
+      );
+      const { _codec, _sizeBytes, ...clean } = biggest;
+      return [clean];
+    }
+    return fsl1080
+      .sort((a, b) => b._sizeBytes - a._sizeBytes)
+      .map(({ _codec, _sizeBytes, ...clean }) => clean);
   });
 }
 module.exports = { getStreams };
