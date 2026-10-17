@@ -3,16 +3,16 @@
   "version": "1.0.0",
   "scrapers": [
     {
-      "id": "4khdhub",
-      "name": "4KHDHub",
-      "description": "4KHDHub direct links",
+      "id": "torrentio",
+      "name": "torrentio",
+      "description": "torrentio direct links",
       "version": "1.0.3",
       "author": "Nuvio Team",
       "supportedTypes": [
         "movie",
         "tv"
       ],
-      "filename": "providers/4khdhub.js",
+      "filename": "providers/torrentio.js",
       "enabled": true,
       "formats": [
         "mkv"
