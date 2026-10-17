@@ -3,8 +3,8 @@
   "version": "1.0.0",
   "scrapers": [
     {
-      "id": "torrentio",
-      "name": "torrentio",
+      "id": "thepiratebay",
+      "name": "thepiratebay",
       "description": "torrentio direct links",
       "version": "1.0.3",
       "author": "Nuvio Team",
@@ -12,7 +12,7 @@
         "movie",
         "tv"
       ],
-      "filename": "providers/torrentio.js",
+      "filename": "providers/thepiratebay.js",
       "enabled": true,
       "formats": [
         "mkv"
